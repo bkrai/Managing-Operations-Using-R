@@ -1,0 +1,17 @@
+# Data for Warehouse Location Problem
+warehouses <- c("Atlanta", "Charlotte", "Orlando", "Nashville", "Birmingham")
+fixed_cost <- c(450000, 380000, 520000, 410000, 350000) 
+markets <- c("Miami", "Tampa", "Jacksonville", "Atlanta-metro", 
+             "Charlotte-metro", "Raleigh", "Orlando-metro", "Nashville-metro")
+demand <- c(12000, 9000, 7000, 15000, 11000, 8000, 10000, 6000)
+
+cost <- matrix(c(
+  4.2, 5.8, 3.1, 7.5, 6.9,   # Miami
+  3.9, 6.2, 2.8, 7.1, 6.4,   # Tampa
+  3.5, 5.5, 2.5, 6.8, 5.9,   # Jacksonville
+  1.8, 4.2, 4.8, 3.9, 3.1,   # Atlanta-metro
+  4.5, 2.1, 5.3, 4.7, 4.0,   # Charlotte-metro
+  4.8, 2.4, 5.6, 4.3, 4.5,   # Raleigh
+  3.2, 5.9, 1.9, 7.0, 6.2,   # Orlando-metro
+  4.1, 4.0, 5.1, 2.8, 3.5    # Nashville-metro
+), nrow = 8, byrow = T)

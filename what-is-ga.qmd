@@ -1,0 +1,73 @@
+---
+title: "Genetic Algorithm"
+author: "Bharatendra Rai"
+format: revealjs
+editor: visual
+---
+
+# How Genetic Algorithms Work
+
+-   optimization techniques inspired by natural evolution
+
+-   GA mimics the process of survival of the fittest to gradually find better solutions
+
+# Core Idea
+
+-   Think of each possible solution (like a job sequence or delivery route) as an individual in a population.
+
+-   The algorithm evolves this population over many "generations" until it finds a very good solution.
+
+# Step-by-Step Process
+
+1.  Initialization
+    Start with a random population of solutions (e.g., 100 random job sequences).
+
+2.  Evaluation (Fitness)
+    Measure how good each solution is using a fitness function.
+    Example: For job sequencing → lower total tardiness = higher fitness.
+
+3.  Selection
+    The best solutions (fittest individuals) are more likely to be chosen as "parents" for the next generation — just like stronger animals are more likely to survive and reproduce.
+
+# Step-by-Step Process...
+
+4.  Crossover (Recombination)
+    Two parent solutions combine to create offspring.
+    Example: Parent 1 = \[3, 1, 5, 2\], Parent 2 = \[4, 2, 1, 6\] → Child might be \[3, 1, 2, 6\]
+
+5.  Mutation
+    Random small changes are introduced to maintain diversity and avoid getting stuck in bad solutions.
+    Example: Swap two jobs in the sequence.
+
+# Step-by-Step Process...
+
+6.  Replacement & Iteration
+    The new generation replaces the old one. Repeat steps 2–5 for many generations (usually 100–500+).
+
+7.  Termination
+    Stop when the solution stops improving significantly, or after a maximum number of generations.
+
+# Visual Analogy
+
+Imagine you’re breeding the fastest delivery drivers.
+You start with 100 random drivers.
+
+In every round, the fastest ones get to ‘have kids’ (create new routes).
+
+Occasionally, a kid makes a small random mistake (mutation).
+
+Over many generations, the group becomes faster and faster at deliveries.
+
+# Key Advantages of GA
+
+-   Works well on complex, **NP-hard** problems (like routing and scheduling)
+
+-   Doesn’t need perfect mathematical formulation
+
+-   Can handle large problems where exact methods fail
+
+-   Easy to understand visually through convergence plots
+
+# Summary
+
+Genetic Algorithms evolve better solutions over generations by selecting the fittest, combining them, and introducing small random changes — just like evolution in nature.

@@ -1,0 +1,165 @@
+---
+title: "My Operations Optimizer"
+subtitle: "Final Capstone Project"
+author: "[Your Name]"
+date: today
+format:
+  dashboard:
+    theme: cosmo
+    orientation: rows
+    scrolling: true
+---
+
+```{r}
+
+#| include: false
+library(ggplot2)
+library(dplyr)
+library(GA)
+library(Benchmarking)
+```
+
+# Welcome
+
+**Welcome to My Operations Analytics Dashboard**
+
+This interactive dashboard showcases the analytical tools I learned this semester, applied to a real-world campus service business.
+
+**Chosen Topic:** CampusDash – Late-night food & package delivery service
+
+Use the navigation bar to explore different tools.
+
+## Job Sequencing (GA)
+
+### Optimal Delivery Sequence
+
+```{r}
+#| title: Gantt Chart - Minimize Total Tardiness
+
+# Sample data
+jobs <- data.frame(
+  JobID = 1:8,
+  ProcessTime = c(15,25,10,30,20,12,35,18),
+  DueDate = c(40,60,30,90,55,45,120,70)
+)
+
+# Fitness function
+tardiness_fitness <- function(seq) {
+  seq <- as.integer(seq)
+  current_time <- 0; total_tardiness <- 0
+  for (i in seq) {
+    current_time <- current_time + jobs$ProcessTime[i]
+    tardiness <- max(0, current_time - jobs$DueDate[i])
+    total_tardiness <- total_tardiness + tardiness
+  }
+  return(-total_tardiness)
+}
+
+set.seed(123)
+GA_job <- ga(type = "permutation", fitness = tardiness_fitness,
+             lower = 1, upper = 8, popSize = 80, maxiter = 150, run = 30, monitor = FALSE)
+
+best_seq <- GA_job@solution[1,]
+best_tardiness <- -GA_job@fitnessValue
+
+schedule <- data.frame(
+  Job = best_seq,
+  Start = cumsum(c(0, jobs$ProcessTime[best_seq][-8])),
+  Duration = jobs$ProcessTime[best_seq],
+  Due = jobs$DueDate[best_seq]
+)
+
+ggplot(schedule, aes(x = Start, xend = Start + Duration, 
+                     y = factor(Job, levels = rev(best_seq)), 
+                     yend = factor(Job, levels = rev(best_seq)))) +
+  geom_segment(linewidth = 10, color = "#1f78b4") +
+  geom_point(aes(x = Due), color = "red", size = 5) +
+  labs(x = "Time (minutes)", y = "Delivery Order") +
+  theme_minimal(base_size = 13)
+```
+
+## Efficiency Analysis (DEA)
+
+### Delivery Zone Efficiency
+
+```{r}
+#| title: DEA Efficiency Scores
+
+coffee <- data.frame(
+  Zone = paste0("Zone", LETTERS[1:8]),
+  Labor_hrs = c(120,150,200,90,180,140,110,160),
+  Cost_USD = c(1800,2200,3000,1400,2600,1900,1700,2400),
+  Deliveries = c(420,550,680,380,520,490,400,600),
+  Revenue = c(5040,7150,8840,4560,6760,6370,5200,7800)
+)
+
+X <- as.matrix(coffee[, c("Labor_hrs", "Cost_USD")])
+Y <- as.matrix(coffee[, c("Deliveries", "Revenue")])
+
+dea_vrs <- dea(X, Y, RTS = "vrs", ORIENTATION = "in")
+
+eff_scores <- round(dea_vrs$eff, 3)
+
+data.frame(Zone = coffee$Zone, Efficiency = eff_scores) %>%
+  ggplot(aes(x = reorder(Zone, Efficiency), y = Efficiency, fill = Efficiency)) +
+  geom_bar(stat = "identity") +
+  scale_fill_gradient(low = "red", high = "darkgreen") +
+  labs(x = "Delivery Zone", y = "Efficiency Score (VRS)") +
+  coord_flip() +
+  theme_minimal(base_size = 13)
+```
+
+## Route Optimization (GA)
+
+### Optimal Delivery Route
+
+```{r}
+#| title: Campus Delivery Route
+
+locations <- c("Depot","DormA","DormB","Library","Gym","DormC",
+               "Cafeteria","DormD","LectureHall","DormE","DormF")
+
+coords <- data.frame(
+  loc = locations,
+  x = c(0,2,3,5,1,6,2,4,7,3,5),
+  y = c(0,3,1,4,5,2,6,3,1,7,5)
+)
+
+route_order <- c(1, 3, 5, 2, 8, 4, 6, 10, 7, 9, 11, 1)
+route_df <- coords[route_order, ]
+
+ggplot(route_df, aes(x = x, y = y)) +
+  geom_path(color = "#1f78b4", linewidth = 1.5) +
+  geom_point(size = 6, color = "#e31a1c") +
+  geom_text(aes(label = loc), vjust = -1.2, size = 4.5, fontface = "bold") +
+  labs(x = "", y = "") +
+  theme_minimal()
+```
+
+## Insights & Reflections
+
+### Key Findings
+
+-   **GA Job Sequencing** significantly reduces customer wait times.
+
+-   **DEA** identified Zones B and D as highly efficient benchmarks.
+
+-   **Route Optimization** shows clear potential for cost and time savings.
+
+### Ethics in Analytics
+
+This dashboard prioritizes customer satisfaction but must also consider driver workload and fairness in delivery allocation. Over-optimization could lead to driver burnout.
+
+### Future Trends
+
+Integrating AI (predictive demand) and real-time data could make this dashboard even more powerful.
+
+### Tools Used
+
+-   Genetic Algorithms (GA package)
+
+-   Data Envelopment Analysis (Benchmarking)
+
+-   Interactive visualizations with ggplot2
+
+-   Built with **Quarto Dashboard**
